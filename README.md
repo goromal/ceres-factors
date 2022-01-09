@@ -1,11 +1,16 @@
 # Ceres Factors
 
-Custom parameterizations and cost functions for the Ceres Solver.
+C++ library with custom parameterizations and cost functions for the Ceres Solver:
+
+- SO3LocalParameterization
+- SE3LocalParameterization
+- SO3Factor
+- SE3Factor
 
 The Ceres Solver (http://ceres-solver.org/) is Google's powerful and extensive C++ optimization library for solving:
 
 1. general unconstrained optimization problems
-2. nonlinear least-squares problems with bounds (not equality!) constraints.
+2. *nonlinear least-squares problems with bounds (not equality!) constraints*
 
 The second application is particularly useful for perception, estimation, and control in robotics (perhaps less so for control, depending on how you implement dynamics constraints), where minimizing general nonlinear measurement or tracking residuals sequentially or in batch form is a common theme. This is further facilitated by Ceres' support for optimizing over vector spaces as well as Lie Groups
 
@@ -15,3 +20,9 @@ Advantages over some other open-source nonlinear least-squares solvers like [sci
 - Scales better to larger problems (used as Google's bundle adjustment backend)
 - Has a built-in auto-differentiation engine that provides exact derivatives and is sometimes even *faster* than supplying analytic Jacobians.
 - Has built-in support for optimizing over manifolds like SO(3)/SE(3).
+
+## Dependencies
+
+- ceres-solver
+- Eigen3
+- [manif-geom-cpp](https://github.com/goromal/manif-geom-cpp)
