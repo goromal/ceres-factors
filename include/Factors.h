@@ -1,3 +1,5 @@
+#pragma once
+
 #include <Eigen/Core>
 #include <ceres/ceres.h>
 #include <SO3.h>
@@ -12,7 +14,7 @@ class SO3Factor
 public:
 EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   // store measured relative pose and inverted covariance matrix
-  SO3Factor(Eigen::Matrix<double,4,1> &qi_vec, Eigen::Matrix<double,3,3> &Qij)
+  SO3Factor(const Eigen::Matrix<double,4,1> &qi_vec, const Eigen::Matrix<double,3,3> &Qij)
   : q_(qi_vec)
   {
     Qij_inv_ = Qij.inverse();
@@ -31,6 +33,12 @@ EIGEN_MAKE_ALIGNED_OPERATOR_NEW
     return true;
   }
 
+  static ceres::CostFunction *Create(const Eigen::Matrix<double,4,1> &qi, const Eigen::Matrix<double,3,3> &Qij) {
+    return new ceres::AutoDiffCostFunction<SO3Factor,
+                                           3,
+                                           4>(new SO3Factor(qi, Qij));
+  }
+
 private:
   SO3d q_;
   Eigen::Matrix<double,3,3> Qij_inv_;
@@ -44,7 +52,7 @@ class SE3Factor
 public:
 EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   // store measured relative pose and inverted covariance matrix
-  SE3Factor(Eigen::Matrix<double,7,1> &Xij_vec, Eigen::Matrix<double,6,6> &Qij) : Xij_(Xij_vec)
+  SE3Factor(const Eigen::Matrix<double,7,1> &Xij_vec, const Eigen::Matrix<double,6,6> &Qij) : Xij_(Xij_vec)
   {
     Qij_inv_ = Qij.inverse();
   }
@@ -61,6 +69,13 @@ EIGEN_MAKE_ALIGNED_OPERATOR_NEW
     r = Qij_inv_.cast<T>() * (Xi_hat.inverse() * Xj_hat - Xij_.cast<T>());  
 
     return true;
+  }
+
+  static ceres::CostFunction *Create(const Eigen::Matrix<double,7,1> &Xij, const Eigen::Matrix<double,6,6> &Qij) {
+    return new ceres::AutoDiffCostFunction<SE3Factor,
+                                           6,
+                                           7,
+                                           7>(new SE3Factor(Xij, Qij));
   }
 
 private:

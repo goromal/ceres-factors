@@ -10,6 +10,7 @@ struct GlobalFixture
     GlobalFixture()
     {
         // common function calls here
+        srand(444444);
     }
 
     ~GlobalFixture() {}

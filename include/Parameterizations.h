@@ -1,3 +1,5 @@
+#pragma once
+
 #include <Eigen/Core>
 #include <ceres/ceres.h>
 #include <SO3.h>
@@ -21,6 +23,12 @@ struct SO3Parameterization {
 
     return true;
   }
+
+  static ceres::LocalParameterization *Create() {
+    return new ceres::AutoDiffLocalParameterization<SO3Parameterization,
+                                                    4,
+                                                    3>();
+  }
 };
 
 // AutoDiff local parameterization for the compact SE3 pose [t q] object. 
@@ -40,5 +48,11 @@ struct SE3Parameterization {
     Yvec << Y.array();
 
     return true;
+  }
+
+  static ceres::LocalParameterization *Create() {
+    return new ceres::AutoDiffLocalParameterization<SE3Parameterization,
+                                                    7,
+                                                    6>();
   }
 };
