@@ -12,13 +12,11 @@ using namespace Eigen;
 class SO3Factor
 {
 public:
-EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+// EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   // store measured relative pose and inverted covariance matrix
   SO3Factor(const Eigen::Matrix<double,4,1> &qi_vec, const Eigen::Matrix<double,3,3> &Qij)
-  : q_(qi_vec)
-  {
-    Qij_inv_ = Qij.inverse();
-  }
+  : q_(qi_vec), Qij_inv_(Qij.inverse())
+  {}
 
   // templated residual definition for both doubles and jets
   // basically a weighted implementation of boxminus using Eigen templated types
@@ -26,9 +24,14 @@ EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   bool operator()(const T* _q_hat, T* _res) const
   {
     SO3<T> q_hat(_q_hat);
-    Eigen::Map<Eigen::Matrix<T,3,1>> r(_res);
+    // Eigen::Map<Eigen::Matrix<T,3,1>> r(_res);
     
-    r = Qij_inv_.cast<T>() * (q_hat - q_.cast<T>());
+    const Eigen::Matrix<T,3,1> r = 
+        /*Qij_inv_ * */q_hat.ominus(q_);
+        // Qij_inv_ * q_hat.ominus(q_.cast<T>());
+    _res[0] = r.x();
+    _res[1] = r.y();
+    _res[2] = r.z();
     
     return true;
   }

@@ -15,11 +15,9 @@ struct SO3Parameterization {
   {
     SO3<T> X(x);
     Eigen::Map<const Eigen::Matrix<T, 3, 1>> dX(delta);
-    
-    SO3<T> Y = X + dX;
-    
     Eigen::Map<Eigen::Matrix<T, 4, 1>> Yvec(x_plus_delta);
-    Yvec << Y.array();
+
+    Yvec << (X + dX).array();
 
     return true;
   }

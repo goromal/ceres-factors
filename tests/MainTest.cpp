@@ -1,5 +1,5 @@
 #define BOOST_TEST_DYN_LINK
-#define BOOST_TEST_MODULE ManifGeomCppTests
+#define BOOST_TEST_MODULE CeresFactorsTests
 
 #include <iostream>
 #include <boost/test/unit_test.hpp>
@@ -10,7 +10,6 @@ struct GlobalFixture
     GlobalFixture()
     {
         // common function calls here
-        srand(444444);
     }
 
     ~GlobalFixture() {}
