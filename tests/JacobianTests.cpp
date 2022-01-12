@@ -3,9 +3,9 @@
 #include <chrono>
 #include <SO3.h>
 #include <SE3.h>
-#include "Parameterizations.h"
-#include "Factors.h"
-#include "tests/SO3ComponentFactors.h"
+#include "ceres-factors/Parameterizations.h"
+#include "ceres-factors/Factors.h"
+#include "ceres-factors/tests/SO3ComponentFactors.h"
 #include <ceres/ceres.h>
 
 using namespace Eigen;

@@ -4,9 +4,9 @@
 #include <SO3.h>
 #include <SE3.h>
 #include <ceres/ceres.h>
-#include "Factors.h"
-#include "tests/SO3ComponentFactors.h"
-#include "Parameterizations.h"
+#include "ceres-factors/Factors.h"
+#include "ceres-factors/tests/SO3ComponentFactors.h"
+#include "ceres-factors/Parameterizations.h"
 
 using namespace Eigen;
 
