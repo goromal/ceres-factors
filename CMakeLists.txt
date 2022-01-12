@@ -24,7 +24,9 @@ target_link_libraries(ceres-factors
 set(UNIT_TEST unit-tests)
 add_executable(${UNIT_TEST}
     tests/MainTest.cpp
-    tests/FactorTests.cpp
+    tests/JacobianTests.cpp
+    tests/ResidualTests.cpp
+    tests/ProblemTests.cpp
 )
 target_link_libraries(${UNIT_TEST}
     ceres-factors
