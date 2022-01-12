@@ -134,64 +134,30 @@ BOOST_AUTO_TEST_CASE(TestSO3CastFactorJac)
             BOOST_CHECK_CLOSE(J(i,j), (j==0) ? 1.0 : 0.0, 1e-8);
 }
 
-// BOOST_AUTO_TEST_CASE(TestSO3OMinusFactorJac)
-// {
-//     srand(444444);
-//     Matrix<double, 3, 4> SO3OMinusFactorJac;
-//     SO3OMinusFactorJac << 0, 2, 0, 0,
-//                           0, 0, 2, 0,
-//                           0, 0, 0, 2;
+BOOST_AUTO_TEST_CASE(TestSO3OMinusFactorJac)
+{
+    Matrix<double, 3, 4> SO3OMinusFactorJac;
+    SO3OMinusFactorJac << 0, 1, 0, 0,
+                          0, 0, 1, 0,
+                          0, 0, 0, 1;
 
-//     double q_hat[4];
-//     q_hat[0] = 1.0;
-//     q_hat[1] = 0.0;
-//     q_hat[2] = 0.0;
-//     q_hat[3] = 0.0;
-//     SO3d q = SO3d::random();
+    double q_hat[4];
+    q_hat[0] = 1.0;
+    q_hat[1] = 0.0;
+    q_hat[2] = 0.0;
+    q_hat[3] = 0.0;
+    SO3d q = SO3d::identity();
 
-//     ceres::Problem problem;
-//     problem.AddResidualBlock(SO3OMinusFactor::Create(q.array()), nullptr, q_hat);
+    ceres::Problem problem;
+    problem.AddResidualBlock(SO3OMinusFactor::Create(q.array()), nullptr, q_hat);
     
-//     ceres::CRSMatrix jac;
-//     problem.Evaluate(ceres::Problem::EvaluateOptions(), nullptr, nullptr, nullptr, &jac);
-//     auto J = CRS2Eigen(jac);
+    ceres::CRSMatrix jac;
+    problem.Evaluate(ceres::Problem::EvaluateOptions(), nullptr, nullptr, nullptr, &jac);
+    auto J = CRS2Eigen(jac);
 
-//     std::cout << "J = \n" << J << std::endl;
-
-//     for (unsigned int i = 0; i < 3; i++)
-//         for (unsigned int j = 0; j < 4; j++)
-//             BOOST_CHECK_CLOSE(J(i,j), SO3OMinusFactorJac(i,j), 1e-8);
-// }
-
-// ===============================================================================================
-
-// BOOST_AUTO_TEST_CASE(TestSO3FactorJac) // TODO FAILS
-// {
-//     srand(444444);
-//     SO3d q = SO3d::random();
-//     Matrix3d Q = Matrix3d::Identity();
-//     ceres::CostFunction* fn = SO3Factor::Create(q.array(), Q);
-
-//     double q_hat[4];
-//     q_hat[0] = 1.0;
-//     q_hat[1] = 0.0;
-//     q_hat[2] = 0.0;
-//     q_hat[3] = 0.0;
-//     double* param[1] = {q_hat};
-
-//     double res[3];
-//     double jac1[4], jac2[4], jac3[4];
-//     double* jac[3] = {jac1, jac2, jac3};
-
-//     BOOST_TEST(fn->Evaluate(param, res, jac));
-
-//     for (int i = 0; i < 3; i++)
-//     {
-//         for (int j = 0; j < 4; j++)
-//         {
-//             std::cout << i << ", " << j << ": " << jac[i][j] << std::endl;
-//         }
-//     }
-// }
+    for (unsigned int i = 0; i < 3; i++)
+        for (unsigned int j = 0; j < 4; j++)
+            BOOST_CHECK_CLOSE(J(i,j), SO3OMinusFactorJac(i,j), 1e-8);
+}
 
 BOOST_AUTO_TEST_SUITE_END()

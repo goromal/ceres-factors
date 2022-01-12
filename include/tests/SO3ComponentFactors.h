@@ -66,17 +66,10 @@ public:
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
     SO3CastFactor(const Vector4d &q_vec) 
     : q_(q_vec), tmp_(4.0)
-    {
-        std::cout << "INIT: q_vec = " << q_vec.transpose() << std::endl;
-        std::cout << "INIT: q_ = " << q_ << std::endl;
-        std::cout << "INIT: q_.w() = " << q_.w() << std::endl;
-        std::cout << "INIT: tmp_ = " << tmp_ << std::endl;
-    }
+    {}
     template<typename T>
     bool operator()(const T* _qhat, T* _res) const
     {
-        std::cout << "q_.w() = " << q_.w() << std::endl;
-        std::cout << "tmp_ = " << tmp_ << std::endl;
         _res[0] = _qhat[0] * q_.cast<T>().w();
         _res[1] = _qhat[0];
         return true;

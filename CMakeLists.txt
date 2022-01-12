@@ -26,6 +26,7 @@ add_executable(${UNIT_TEST}
     tests/MainTest.cpp
     tests/JacobianTests.cpp
     tests/ResidualTests.cpp
+    tests/ProblemTests.cpp
 )
 target_link_libraries(${UNIT_TEST}
     ceres-factors

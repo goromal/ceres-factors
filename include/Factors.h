@@ -8,14 +8,14 @@
 using namespace Eigen;
 
 // AutoDiff cost function (factor) for the difference between two rotations.
-// Weighted by measurement covariance, Qij_.
+// Weighted by measurement covariance, Q_.
 class SO3Factor
 {
 public:
-// EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   // store measured relative pose and inverted covariance matrix
-  SO3Factor(const Eigen::Matrix<double,4,1> &qi_vec, const Eigen::Matrix<double,3,3> &Qij)
-  : q_(qi_vec), Qij_inv_(Qij.inverse())
+  SO3Factor(const Vector4d &q_vec, const Matrix3d &Q)
+  : q_(q_vec), Q_inv_(Q.inverse())
   {}
 
   // templated residual definition for both doubles and jets
@@ -24,27 +24,20 @@ public:
   bool operator()(const T* _q_hat, T* _res) const
   {
     SO3<T> q_hat(_q_hat);
-    // Eigen::Map<Eigen::Matrix<T,3,1>> r(_res);
-    
-    const Eigen::Matrix<T,3,1> r = 
-        /*Qij_inv_ * */q_hat.ominus(q_);
-        // Qij_inv_ * q_hat.ominus(q_.cast<T>());
-    _res[0] = r.x();
-    _res[1] = r.y();
-    _res[2] = r.z();
-    
+    Map<Matrix<T,3,1>> r(_res);
+    r = Q_inv_ * (q_hat - q_.cast<T>());
     return true;
   }
 
-  static ceres::CostFunction *Create(const Eigen::Matrix<double,4,1> &qi, const Eigen::Matrix<double,3,3> &Qij) {
+  static ceres::CostFunction *Create(const Vector4d &q_vec, const Matrix3d &Q) {
     return new ceres::AutoDiffCostFunction<SO3Factor,
                                            3,
-                                           4>(new SO3Factor(qi, Qij));
+                                           4>(new SO3Factor(q_vec, Q));
   }
 
 private:
   SO3d q_;
-  Eigen::Matrix<double,3,3> Qij_inv_;
+  Matrix3d Q_inv_;
 };
 
 // AutoDiff cost function (factor) for the difference between a measured 3D
