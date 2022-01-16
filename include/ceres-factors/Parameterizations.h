@@ -39,11 +39,9 @@ struct SE3Parameterization {
   {
     SE3<T> X(x);
     Eigen::Map<const Eigen::Matrix<T, 6, 1>> dX(delta);
-    
-    SE3<T> Y = X + dX;
-    
     Eigen::Map<Eigen::Matrix<T, 7, 1>> Yvec(x_plus_delta);
-    Yvec << Y.array();
+    
+    Yvec << (X + dX).array();
 
     return true;
   }

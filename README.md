@@ -2,10 +2,12 @@
 
 C++ library with custom parameterizations and cost functions for the Ceres Solver:
 
-- SO3LocalParameterization
-- SE3LocalParameterization
-- SO3Factor
-- SE3Factor
+- *SO3LocalParameterization* (chart map implementation)
+- *SE3LocalParameterization* (chart map implementation)
+- *SO3Factor* (e.g., rotation averaging)
+- *RelSE3Factor* (e.g., pose graph optimization)
+- *RangeFactor* (for fusing point-to-point range measurements with pose measurements)
+- *AltFactor* (for fusing altimeter measurements with pose measurements)
 
 The Ceres Solver (http://ceres-solver.org/) is Google's powerful and extensive C++ optimization library for solving:
 
