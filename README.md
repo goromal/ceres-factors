@@ -8,6 +8,7 @@ C++ library with custom parameterizations and cost functions for the Ceres Solve
 - *RelSE3Factor* (e.g., pose graph optimization)
 - *RangeFactor* (for fusing point-to-point range measurements with pose measurements)
 - *AltFactor* (for fusing altimeter measurements with pose measurements)
+- *TimeSyncAttFactor* (for determining small time offsets by comparing attitude and Euler-integrated gyro measurements)
 
 The Ceres Solver (http://ceres-solver.org/) is Google's powerful and extensive C++ optimization library for solving:
 
