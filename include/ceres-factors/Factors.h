@@ -146,3 +146,38 @@ private:
   double hi_;
   double qi_inv_;
 };
+
+// AutoDiff cost function (factor) for time-syncing attitude measurements,
+// giving the residual q_ref - (q + dt * w), where dt is the decision
+// variable. Weighted by measurement covariance, Q[3x3].
+class TimeSyncAttFactor
+{
+public:
+  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+  TimeSyncAttFactor(const Vector4d &q_ref_vec, const Vector4d &q_vec,
+                    const Vector3d &w_vec, const Matrix3d &Q)
+  : q_ref_(q_ref_vec), q_(q_vec), w_(w_vec), Q_inv_(Q.inverse())
+  {}
+
+  template<typename T>
+  bool operator()(const T* _dt_hat, T* _res) const
+  {
+    Map<Matrix<T,3,1>> r(_res);
+    r = Q_inv_ * (q_ref_.cast<T>() - (q_.cast<T>() + *_dt_hat * w_.cast<T>()));
+    return true;
+  }
+
+  static ceres::CostFunction *Create(const Vector4d &q_ref_vec, const Vector4d &q_vec,
+                                     const Vector3d &w_vec, const Matrix3d &Q) {
+    return new ceres::AutoDiffCostFunction<TimeSyncAttFactor,
+                                           3,
+                                           1>(new TimeSyncAttFactor(q_ref_vec, q_vec,
+                                                                    w_vec, Q));
+  }
+
+private:
+  SO3d q_ref_;
+  SO3d q_;
+  Vector3d w_;
+  Matrix3d Q_inv_;
+};

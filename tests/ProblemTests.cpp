@@ -84,4 +84,32 @@ BOOST_AUTO_TEST_CASE(TestRelSE3FactorProblem)
     BOOST_CHECK_CLOSE(T1hat.q().z(), T1.q().z(), 1e-4);
 }
 
+BOOST_AUTO_TEST_CASE(TestTimeSyncAttFactorProblem)
+{
+    srand(444444);
+    Matrix3d Q = Matrix3d::Identity();
+    SO3d qref = SO3d::random();
+    Vector3d w(0.5,1.0,-2.0);
+    double dt_true = 0.2;
+    double dt_hat = 0.0;
+    SO3d q = qref + (-dt_true * w);
+
+    ceres::Problem problem;
+    problem.AddParameterBlock(&dt_hat, 1);
+    problem.AddResidualBlock(TimeSyncAttFactor::Create(qref.array(), q.array(),
+                                                       w, Q),
+                             nullptr,
+                             &dt_hat);
+
+    ceres::Solver::Options options;
+    options.max_num_iterations = 100;
+    options.num_threads = 4;
+    options.linear_solver_type = ceres::SPARSE_NORMAL_CHOLESKY;
+    options.minimizer_progress_to_stdout = false;
+    ceres::Solver::Summary summary;
+    ceres::Solve(options, &problem, &summary);
+
+    BOOST_CHECK_CLOSE(dt_true, dt_hat, 1e-4);
+}
+
 BOOST_AUTO_TEST_SUITE_END()
