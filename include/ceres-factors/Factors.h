@@ -181,3 +181,71 @@ private:
   Vector3d w_;
   Matrix3d Q_inv_;
 };
+
+// AutoDiff cost function (factor) for SO3 offset calibration from attitude measurements,
+// giving the residual q_ref - (q * q_off), where q_off is the decision variable.
+// Weighted by measurement covariance, Q[3x3].
+class SO3OffsetFactor
+{
+public:
+  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+  SO3OffsetFactor(const Vector4d &q_ref_vec, const Vector4d &q_vec, const Matrix3d &Q)
+  : q_ref_(q_ref_vec), q_(q_vec), Q_inv_(Q.inverse())
+  {}
+
+  template<typename T>
+  bool operator()(const T* _q_off, T* _res) const
+  {
+    SO3<T> q_off(_q_off);
+    Map<Matrix<T,3,1>> r(_res);
+    r = Q_inv_ * (q_ref_.cast<T>() - (q_.cast<T>() * q_off));
+    return true;
+  }
+
+  static ceres::CostFunction *Create(const Vector4d &q_ref_vec, const Vector4d &q_vec,
+                                     const Matrix3d &Q) {
+    return new ceres::AutoDiffCostFunction<SO3OffsetFactor,
+                                           3,
+                                           4>(new SO3OffsetFactor(q_ref_vec, q_vec, Q));
+  }
+
+private:
+  SO3d q_ref_;
+  SO3d q_;
+  Matrix3d Q_inv_;
+};
+
+// AutoDiff cost function (factor) for SE3 offset calibration from pose measurements,
+// giving the residual T_ref - (T * T_off), where T_off is the decision variable.
+// Weighted by measurement covariance, Q[6x6].
+class SE3OffsetFactor
+{
+public:
+  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+  typedef Matrix<double,7,1> Vector7d;
+  typedef Matrix<double,6,6> Matrix6d;
+  SE3OffsetFactor(const Vector7d &T_ref_vec, const Vector7d &T_vec, const Matrix6d &Q)
+  : T_ref_(T_ref_vec), T_(T_vec), Q_inv_(Q.inverse())
+  {}
+
+  template<typename T>
+  bool operator()(const T* _T_off, T* _res) const
+  {
+    SE3<T> T_off(_T_off);
+    Map<Matrix<T,6,1>> r(_res);
+    r = Q_inv_ * (T_ref_.cast<T>() - (T_.cast<T>() * T_off));
+    return true;
+  }
+
+  static ceres::CostFunction *Create(const Vector7d &T_ref_vec, const Vector7d &T_vec,
+                                     const Matrix6d &Q) {
+    return new ceres::AutoDiffCostFunction<SE3OffsetFactor,
+                                           6,
+                                           7>(new SE3OffsetFactor(T_ref_vec, T_vec, Q));
+  }
+
+private:
+  SE3d T_ref_;
+  SE3d T_;
+  Matrix6d Q_inv_;
+};
