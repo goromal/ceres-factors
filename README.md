@@ -1,5 +1,7 @@
 # Ceres Factors
 
+![example workflow](https://github.com/goromal/ceres-factors/actions/workflows/test.yml/badge.svg)
+
 C++ library with custom parameterizations and cost functions for the Ceres Solver:
 
 - *SO3LocalParameterization* (chart map implementation)
