@@ -1,0 +1,132 @@
+AccessModifierOffset: -4
+
+AlignAfterOpenBracket: Align
+
+AlignConsecutiveAssignments: true
+
+AlignConsecutiveDeclarations: true
+
+AlignOperands: true
+
+AlignTrailingComments: true
+
+AllowAllParametersOfDeclarationOnNextLine: false
+
+# Need to see if this applies to lambda bodies:
+AllowShortBlocksOnASingleLine: false
+
+AllowShortCaseLabelsOnASingleLine: false
+
+AllowShortFunctionsOnASingleLine: Empty
+
+AllowShortIfStatementsOnASingleLine: false
+
+AllowShortLoopsOnASingleLine: false
+
+AlwaysBreakAfterReturnType: None
+
+AlwaysBreakBeforeMultilineStrings: false
+
+AlwaysBreakTemplateDeclarations: true
+
+BinPackArguments: false
+
+BinPackParameters: false
+
+BraceWrapping:
+    AfterClass:            true
+    AfterControlStatement: true
+    AfterEnum:             true
+    AfterFunction:         true
+    AfterNamespace:        true
+    AfterStruct:           true
+    AfterUnion:            true
+    BeforeCatch:           true
+    BeforeElse:            true
+
+BreakBeforeBinaryOperators: None
+
+BreakBeforeBraces: Custom
+
+#BreakBeforeInheritanceComma: true
+
+BreakBeforeTernaryOperators: true
+
+# Some people don't like this because it's harder to grep for error messages.
+BreakStringLiterals: true
+
+ColumnLimit: 120
+
+ConstructorInitializerAllOnOneLineOrOnePerLine: true
+
+# Need to test this.
+ConstructorInitializerIndentWidth: 4
+
+ContinuationIndentWidth: 4
+
+Cpp11BracedListStyle: true
+
+# Need to test this.
+DerivePointerAlignment: false
+
+ExperimentalAutoDetectBinPacking: false
+
+#TODO
+#IncludeCategories:
+
+IndentCaseLabels: false
+
+IndentWidth: 4
+
+IndentWrappedFunctionNames: false
+
+Language: Cpp
+
+KeepEmptyLinesAtTheStartOfBlocks: false
+
+#TODO
+#MacroBlockBegin:
+
+MaxEmptyLinesToKeep: 1
+
+NamespaceIndentation: None
+
+PointerAlignment: Left
+
+ReflowComments: true
+
+# Usually the order is intentional.
+SortIncludes: false
+
+# Usually the order is intentional.
+#SortUsingDeclarations: false
+
+SpaceAfterCStyleCast: false
+
+SpaceAfterTemplateKeyword: false
+
+SpaceBeforeAssignmentOperators: true
+
+SpaceBeforeParens: ControlStatements
+
+SpaceInEmptyParentheses: false
+
+SpacesBeforeTrailingComments: 1
+
+SpacesInAngles: false
+
+SpacesInCStyleCastParentheses: false
+
+SpacesInContainerLiterals: false
+
+SpacesInParentheses: false
+
+SpacesInSquareBrackets: false
+
+Standard: Cpp11
+
+TabWidth: 8
+
+UseTab: Never
+
+PenaltyBreakBeforeFirstCallParameter: 100
