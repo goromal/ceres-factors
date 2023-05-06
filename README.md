@@ -28,8 +28,20 @@ Advantages over some other open-source nonlinear least-squares solvers like [sci
 - Has a built-in auto-differentiation engine that provides exact derivatives and is sometimes even *faster* than supplying analytic Jacobians.
 - Has built-in support for optimizing over manifolds like SO(3)/SE(3).
 
-## Dependencies
+## Building / Installing
 
-- ceres-solver
-- Eigen3
+This library is built with CMake. Most recently tested with the following dependencies:
+
+- ceres-solver 2.0.0
+- Eigen 3.4.0
 - [manif-geom-cpp](https://github.com/goromal/manif-geom-cpp)
+- Boost 1.79.0 (for unit test framework)
+
+```bash
+mkdir build
+cd build
+cmake ..
+make # or make install
+```
+
+By default, building will build and run the unit tests, but this can be turned off with the CMake option `BUILD_TESTS`.
