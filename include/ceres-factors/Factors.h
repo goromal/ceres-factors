@@ -104,6 +104,64 @@ private:
     double qij_inv_;
 };
 
+class RangeBearing2DFactor
+{
+public:
+    /**
+     * Initialize factor with reference measurements and covariances.
+     *
+     * @param d_k Range measurement.
+     * @param sigma_d_k Noise associated with the range measurement.
+     * @param theta_k Bearing measurement w.r.t. the vehicle body frame.
+     * @param sigma_theta_k Noise associated with the bearing measurement.
+     * @param p_k Position of the vehicle in the world frame.
+     * @param phi_k Rotation of the vehicle w.r.t. the world frame.
+     */
+    RangeBearing2DFactor(double&   d_k,
+                         double&   sigma_d_k,
+                         double&   theta_k,
+                         double&   sigma_theta_k,
+                         Vector2d& p_k,
+                         double&   phi_k)
+        : p_k_(p_k)
+    {
+        // Construct sensor-to-world rotation
+        SO2d R_S_W = SO2d::fromAngle(phi_k) * SO2d::fromAngle(theta_k);
+        // Construct bearing vector
+        Vector2d b_k_ = R_S_W * Vector2d(d_k, 0);
+        // Construct rotated bearing covariance matrix
+        Matrix2d Sigma_S =
+            (Matrix2d() << sigma_d_k * sigma_d_k, 0, 0, d_k * d_k * sigma_theta_k * sigma_theta_k).finished();
+        Sigma_k_ = (R_S_W.R() * Sigma_S * R_S_W.R().transpose()).inverse();
+    }
+
+    /**
+     * Templated residual function
+     */
+    template<typename T>
+    bool operator()(const T* _l_hat, const T* _R_err_hat, T* _res) const
+    {
+        Eigen::Matrix<T, 2, 1> l_hat(_l_hat);
+        SO2<T>                 R_err_hat(_R_err_hat);
+        Map<Matrix<T, 2, 1>>   r(_res);
+        r = Sigma_k_inv_ * (b_k_.cast<T>() - R_err_hat * (l_hat - p_k_.cast<T>()));
+        return true;
+    }
+
+    // cost function generator--ONLY FOR PYTHON WRAPPER
+    static ceres::CostFunction*
+    Create(double& d_k, double& sigma_d_k, double& theta_k, double& sigma_theta_k, Vector2d& p_k, double& phi_k)
+    {
+        return new ceres::AutoDiffCostFunction<RangeBearing2DFactor, 2, 2, 2>(
+            new RangeBearing2DFactor(d_k, sigma_d_k, theta_k, sigma_theta_k, p_k, phi_k));
+    }
+
+private:
+    Vector2d b_k_;
+    Matrix2d Sigma_k_inv_;
+    Vector2d p_k_;
+}
+
 // AutoDiff cost function (factor) for the difference between an altitude
 // measurement hi, and the altitude of an estimated pose, Xi_hat.
 // Weighted by measurement variance, qi_.
