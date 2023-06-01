@@ -2,6 +2,8 @@
 
 #include <Eigen/Core>
 #include <ceres/ceres.h>
+#include <SO2.h>
+#include <SE2.h>
 #include <SO3.h>
 #include <SE3.h>
 
@@ -117,12 +119,12 @@ public:
      * @param p_k Position of the vehicle in the world frame.
      * @param phi_k Rotation of the vehicle w.r.t. the world frame.
      */
-    RangeBearing2DFactor(double&   d_k,
-                         double&   sigma_d_k,
-                         double&   theta_k,
-                         double&   sigma_theta_k,
-                         Vector2d& p_k,
-                         double&   phi_k)
+    RangeBearing2DFactor(const double&   d_k,
+                         const double&   sigma_d_k,
+                         const double&   theta_k,
+                         const double&   sigma_theta_k,
+                         const Vector2d& p_k,
+                         const double&   phi_k)
         : p_k_(p_k)
     {
         // Construct sensor-to-world rotation
@@ -132,7 +134,7 @@ public:
         // Construct rotated bearing covariance matrix
         Matrix2d Sigma_S =
             (Matrix2d() << sigma_d_k * sigma_d_k, 0, 0, d_k * d_k * sigma_theta_k * sigma_theta_k).finished();
-        Sigma_k_ = (R_S_W.R() * Sigma_S * R_S_W.R().transpose()).inverse();
+        Sigma_k_inv_ = (R_S_W.R() * Sigma_S * R_S_W.R().transpose()).inverse();
     }
 
     /**
@@ -149,8 +151,12 @@ public:
     }
 
     // cost function generator--ONLY FOR PYTHON WRAPPER
-    static ceres::CostFunction*
-    Create(double& d_k, double& sigma_d_k, double& theta_k, double& sigma_theta_k, Vector2d& p_k, double& phi_k)
+    static ceres::CostFunction* Create(const double&   d_k,
+                                       const double&   sigma_d_k,
+                                       const double&   theta_k,
+                                       const double&   sigma_theta_k,
+                                       const Vector2d& p_k,
+                                       const double&   phi_k)
     {
         return new ceres::AutoDiffCostFunction<RangeBearing2DFactor, 2, 2, 2>(
             new RangeBearing2DFactor(d_k, sigma_d_k, theta_k, sigma_theta_k, p_k, phi_k));
@@ -160,7 +166,7 @@ private:
     Vector2d b_k_;
     Matrix2d Sigma_k_inv_;
     Vector2d p_k_;
-}
+};
 
 // AutoDiff cost function (factor) for the difference between an altitude
 // measurement hi, and the altitude of an estimated pose, Xi_hat.
