@@ -13,6 +13,7 @@ C++ library with custom parameterizations and cost functions for the Ceres Solve
 - *TimeSyncAttFactor* (for determining small time offsets by comparing attitude and Euler-integrated gyro measurements)
 - *SO3OffsetFactor* (for calibrating rotation offsets)
 - *SE3OffsetFactor* (for calibrating pose offsets)
+- *RangeBearing2DFactor* (for incorporating a range + bearing sensor in 2D)
 
 The Ceres Solver (http://ceres-solver.org/) is Google's powerful and extensive C++ optimization library for solving:
 
