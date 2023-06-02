@@ -23,6 +23,8 @@ target_link_libraries(ceres-factors
 
 set(UNIT_TEST unit-tests)
 add_executable(${UNIT_TEST}
+    tests/Utils.h
+    tests/Utils.cpp
     tests/MainTest.cpp
     tests/JacobianTests.cpp
     tests/ResidualTests.cpp
