@@ -1,12 +1,15 @@
 #include <boost/test/unit_test.hpp>
 #include <Eigen/Core>
 #include <chrono>
+#include <SO2.h>
+#include <SE2.h>
 #include <SO3.h>
 #include <SE3.h>
 #include <ceres/ceres.h>
 #include "ceres-factors/Factors.h"
 #include "ceres-factors/tests/SO3ComponentFactors.h"
 #include "ceres-factors/Parameterizations.h"
+#include "Utils.h"
 
 using namespace Eigen;
 
@@ -120,6 +123,35 @@ BOOST_AUTO_TEST_CASE(TestSO3OMinusFactorRes)
 
     for (unsigned int i = 0; i < res.size(); i++)
         BOOST_CHECK_CLOSE(r(i, 0), q_diff(i, 0), 1e-8);
+}
+
+BOOST_AUTO_TEST_CASE(TestRangeBearing2DFactorRes)
+{
+    srand(444444);
+    double   sigma_d     = 1.;
+    double   sigma_theta = 1.;
+    Vector2d l;
+    l.setRandom();
+    l *= 10.0;
+    double lhat[2] = {l(0), l(1)};
+    double Rhat[2] = {1., 0.};
+    SE2d   x       = SE2d::random();
+    x.t() *= 10.0;
+    double   d, theta, phi;
+    Vector2d p;
+    test_utils::getNoiselessRangeBearing2DData(x, l, d, theta, p, phi);
+
+    ceres::Problem problem;
+    problem.AddResidualBlock(RangeBearing2DFactor::Create(d, sigma_d, theta, sigma_theta, p, phi), nullptr, lhat, Rhat);
+
+    std::vector<double> res;
+    ceres::CRSMatrix    jac;
+    problem.Evaluate(ceres::Problem::EvaluateOptions(), nullptr, &res, nullptr, &jac);
+
+    for (auto r : res)
+    {
+        BOOST_CHECK(abs(r) < 1e-8);
+    }
 }
 
 BOOST_AUTO_TEST_SUITE_END()

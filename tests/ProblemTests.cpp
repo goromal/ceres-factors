@@ -8,6 +8,7 @@
 #include <ceres/ceres.h>
 #include "ceres-factors/Parameterizations.h"
 #include "ceres-factors/Factors.h"
+#include "Utils.h"
 
 using namespace Eigen;
 
@@ -182,9 +183,10 @@ BOOST_AUTO_TEST_CASE(TestRangeBearing2DFactorProblem)
 
     for (unsigned int i = 0; i < 100; i++)
     {
-        double d_k  = (x.t() - l).norm();
-        double th_k = SO2d::fromTwoUnitVectors(x.q().R() * Vector2d(1., 0.), (l - x.t()) / d_k).angle();
-        problem.AddResidualBlock(RangeBearing2DFactor::Create(d_k, sigma_d, th_k, sigma_theta, x.t(), x.q().angle()),
+        double   d, theta, phi;
+        Vector2d p;
+        test_utils::getNoiselessRangeBearing2DData(x, l, d, theta, p, phi);
+        problem.AddResidualBlock(RangeBearing2DFactor::Create(d, sigma_d, theta, sigma_theta, p, phi),
                                  nullptr,
                                  l_hat.data(),
                                  R_err_hat.data());
@@ -201,7 +203,7 @@ BOOST_AUTO_TEST_CASE(TestRangeBearing2DFactorProblem)
 
     BOOST_CHECK_CLOSE(l_hat(0), 10.0, 1.);
     BOOST_CHECK_CLOSE(l_hat(1), -5.0, 1.);
-    BOOST_CHECK_CLOSE(R_err_hat.angle(), 0., 1.);
+    BOOST_CHECK(abs(R_err_hat.angle()) < 1.e-8);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

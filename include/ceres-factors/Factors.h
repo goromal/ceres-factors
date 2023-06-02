@@ -130,7 +130,7 @@ public:
         // Construct sensor-to-world rotation
         SO2d R_S_W = SO2d::fromAngle(phi_k) * SO2d::fromAngle(theta_k);
         // Construct bearing vector
-        Vector2d b_k_ = R_S_W * Vector2d(d_k, 0);
+        b_k_ = R_S_W * Vector2d(d_k, 0);
         // Construct rotated bearing covariance matrix
         Matrix2d Sigma_S =
             (Matrix2d() << sigma_d_k * sigma_d_k, 0, 0, d_k * d_k * sigma_theta_k * sigma_theta_k).finished();
@@ -143,9 +143,9 @@ public:
     template<typename T>
     bool operator()(const T* _l_hat, const T* _R_err_hat, T* _res) const
     {
-        Eigen::Matrix<T, 2, 1> l_hat(_l_hat);
-        SO2<T>                 R_err_hat(_R_err_hat);
-        Map<Matrix<T, 2, 1>>   r(_res);
+        Matrix<T, 2, 1>      l_hat(_l_hat);
+        SO2<T>               R_err_hat(_R_err_hat);
+        Map<Matrix<T, 2, 1>> r(_res);
         r = Sigma_k_inv_ * (b_k_.cast<T>() - R_err_hat * (l_hat - p_k_.cast<T>()));
         return true;
     }
