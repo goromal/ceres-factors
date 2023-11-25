@@ -15,6 +15,8 @@ C++ library with custom parameterizations and cost functions for the Ceres Solve
 - *SE3OffsetFactor* (for calibrating pose offsets)
 - *RangeBearing2DFactor* (for incorporating a range + bearing sensor in 2D)
 
+Some explanations and illustrative examples are available in my public-facing subset of [notes on optimization libraries](https://notes.andrewtorgesen.com/doku.php?id=public:autonomy:implementation:opt-libs).
+
 The Ceres Solver (http://ceres-solver.org/) is Google's powerful and extensive C++ optimization library for solving:
 
 1. general unconstrained optimization problems
